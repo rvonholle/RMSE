@@ -4,6 +4,8 @@ from collections import namedtuple
 from operator import itemgetter
 import cmath
 import math
+import sys
+import os
 
 ################################################################
 # Named Tuples
@@ -28,8 +30,6 @@ def ParsePlotFile(fName):
       content = f.read()
    f.close()
 
-#   print content
-
    #Remove all comment lines
    content = content.split('\n')
    content = [line for line in content if not ('#' in line)]
@@ -53,21 +53,28 @@ def ProcessData(text):
    fileData = {}
    for line in text:
       if ( len(line)==7 ):
+         dbsm_pp = line[3]
+         phase_pp = line[4]
+         dbsm_tt = line[5]
+         phase_tt = line[6]
          tempAngle = (line[0], line[1], line[2])
-         tempField = (cmath.sqrt((10.0**(line[3]/10.0))/(4.0*cmath.pi)) * \
-                      cmath.exp(complex(0.0,line[4]*cmath.pi/180)), \
-                      cmath.sqrt((10.0**(line[5]/10.0))/(4.0*cmath.pi)) * \
-                      cmath.exp(complex(0.0,line[6]*cmath.pi/180)))
       elif ( len(line)==9 ):
+         dbsm_pp = line[5]
+         phase_pp = line[6]
+         dbsm_tt = line[7]
+         phase_tt = line[8]
          tempAngle = (line[0], line[1], line[2], line[3], line[4])
-         tempField = (cmath.sqrt((10.0**(line[5]/10.0))/(4.0*cmath.pi)) * \
-                      cmath.exp(complex(0.0,line[6]*cmath.pi/180)), \
-                      cmath.sqrt((10.0**(line[7]/10.0))/(4.0*cmath.pi)) * \
-                      cmath.exp(complex(0.0,line[8]*cmath.pi/180)))
       else:
          print(fName+' has incorrect number of entries on the following line:')
          print(line)
          break
+      RCS_pp = 10**(dbsm_pp/10.0)
+      EMag_pp = cmath.sqrt(RCS_pp/(4.0*cmath.pi))
+      Field_pp = EMag_pp*cmath.exp(complex(0.0,phase_pp*cmath.pi/180))
+      RCS_tt = 10**(dbsm_tt/10.0)
+      EMag_tt = cmath.sqrt(RCS_tt/(4.0*cmath.pi))
+      Field_tt = EMag_tt*cmath.exp(complex(0.0,phase_tt*cmath.pi/180))
+      tempField = (Field_pp,Field_tt)
       fileData.update({tempAngle:tempField})
    
    #Handle incorrect outpt

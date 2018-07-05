@@ -25,6 +25,10 @@ def ParsePlotFile(fName):
    data = []
 
    #Read in the file
+   if not( os.access(fName, os.R_OK) ):
+      print "Error opening plot file ", fName
+      sys.exit(125)
+
    fileObj = open(fName,'r')
    with open(fName,'r') as f:
       content = f.read()

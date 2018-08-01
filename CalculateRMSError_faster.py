@@ -85,9 +85,12 @@ def ProcessData(text):
    return fileData
 #
 def AlignData(data_a,data_b):
+   dellist = []
    for key in data_b:
       if not(data_a.has_key(key)):
-         del data_a[key]
+         dellist.append(key)
+   for key in dellist:
+      del data_b[key]
    return data_a
 #
 def findFreqs(dataSet):
